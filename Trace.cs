@@ -11,7 +11,7 @@ namespace Kesco.Lib.Web.SignalR
 {
     public class Trace
     {
-        public static async Task UpdateHelperInDataBase(string connectionId, bool stopCalled)
+        public static async Task UpdateHelperInDataBase(string connectionId, DateTime startTime, bool stopCalled)
         {
             await Task.Run(() =>
             {
@@ -25,8 +25,19 @@ namespace Kesco.Lib.Web.SignalR
 UPDATE  SignalRLog
 SET     ЗавершениеРаботы = @ЗавершениеРаботы,
         КакЗавершиласьРабота = @КакЗавершиласьРабота        
-WHERE   ConnectionId = @ConnectionId
+WHERE   ConnectionId = @ConnectionId 
 ";
+                if (startTime != DateTime.MinValue)
+                {
+                    sqlParams.Add("@НачалоРаботы", startTime);
+                    sqlText = @"
+UPDATE  SignalRLog
+SET     ЗавершениеРаботы = @ЗавершениеРаботы,
+        КакЗавершиласьРабота = @КакЗавершиласьРабота        
+WHERE   НачалоРаботы = @НачалоРаботы AND ConnectionId = @ConnectionId 
+";
+                }
+
                 try
                 {
                     DBManager.ExecuteNonQuery(sqlText, CommandType.Text, Config.DS_signalr, sqlParams);

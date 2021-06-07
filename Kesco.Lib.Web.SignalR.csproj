@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{EB32DBFE-59E0-4F6C-A718-BE9BA708C64F}</ProjectGuid>
+    <ProjectGuid>{E7BA632E-F2B4-4B33-A978-B42676CFB180}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Kesco.Lib.Web.SignalR</RootNamespace>

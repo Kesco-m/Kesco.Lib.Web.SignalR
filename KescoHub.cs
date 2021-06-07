@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Hosting;
+using Kesco.Lib.BaseExtention.Enums.Controls;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 
@@ -74,7 +75,8 @@ namespace Kesco.Lib.Web.SignalR
         ///     Метод отправки сообщения клиенту
         /// </summary>
         /// <param name="message">Объект сообщения</param>
-        public static void SendMessage(SignalMessage message)
+        /// <param name="receiveClients">Кто получит сообщение</param>
+        public static void SendMessage(SignalMessage message, SignaRReceiveClientsMessageEnum receiveClients = SignaRReceiveClientsMessageEnum.ItemId_ItemName)
         {
             var connectionServer = ConnectionServer.Instance;
             if (connectionServer == null) return;
@@ -90,12 +92,16 @@ namespace Kesco.Lib.Web.SignalR
 
 
             var connectionsSignal = allConnectionHelpers.Where(x =>
-                x.EntityId != signalView && x.PageId != message.PageId && x.EntityId == message.ItemId &&
-                x.ItemName.ToLower() == message.ItemName.ToLower()).ToList();
+                x.EntityId != signalView && 
+                
+                ((x.PageId == message.PageId && receiveClients == SignaRReceiveClientsMessageEnum.Self)
+                || (x.PageId != message.PageId && (receiveClients == SignaRReceiveClientsMessageEnum.ItemName 
+                                               || receiveClients == SignaRReceiveClientsMessageEnum.ItemId_ItemName && x.EntityId == message.ItemId)))
+                && x.ItemName.ToLower() == message.ItemName.ToLower()).ToList();
 
             if (connectionsSignal.Count > 0)
             {
-                Debug.WriteLine(message.Message);
+                //Debug.WriteLine(message.Message);
                 var ids = new List<string>();
                 connectionsSignal.ForEach(x => { ids.Add(x.ConnectionId); });
                 CurrentContext.Clients.Clients(ids).receiveSignalMessage(message);

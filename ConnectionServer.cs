@@ -91,9 +91,16 @@ namespace Kesco.Lib.Web.SignalR
         /// <param name="stopCalled">Причина разрыва соединения</param>
         public void RemoveConnection(string connectionId, bool stopCalled)
         {
+            var connectionHelper = GetConnectionHelper(connectionId);
+            var startTime = DateTime.MinValue;
+            if (connectionHelper != null)
+            {
+                startTime = connectionHelper.StartTime;
+                connectionHelper = null;
+            }
             var isRemove = _connections.TryRemove(connectionId);
             if (isRemove)
-                Task.WhenAll(Trace.UpdateHelperInDataBase(connectionId, stopCalled));
+                Task.WhenAll(Trace.UpdateHelperInDataBase(connectionId, startTime, stopCalled));
         }
 
 
